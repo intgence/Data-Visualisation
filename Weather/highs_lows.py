@@ -4,28 +4,38 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 
 # Get dates and high temperatures from file
-filename = 'sitka_weather_07-2014.csv'
+filename = 'death_valley_2014.csv'
 with open(filename) as f:
     reader = csv.reader(f)
     header_row = next(reader)
 
-    dates,highs = [],[]
+    dates,highs,lows = [],[],[]
     for row in reader:
-        dates.append(datetime.strptime(row[0],"%Y-%m-%d"))
-        highs.append(int(row[1]))
+        try:
+            current_date=datetime.strptime(row[0],"%Y-%m-%d")
+            high=int(row[1])
+            low=int(row[3])
+        except ValueError:
+            print(datetime.strptime(row[0],"%Y-%m-%d"),'missing data')
+        else:
+            dates.append(current_date)
+            highs.append(high)
+            lows.append(low)
 
 
 fig = plt.figure(dpi = 128,figsize = (10,6))
-plt.plot(dates,highs,c='red')
+plt.plot(dates,highs,c='red',alpha=0.5)
+plt.plot(dates,lows,c='blue',alpha=0.5)
+plt.fill_between(dates,highs,lows,facecolor='blue',alpha=0.1)
 
 # Format plot.
-plt.title("Daily High Temperatures, July 2014", fontsize = 24)
+plt.title("Daily High and Low Temperatures - 2014", fontsize = 24)
 plt.xlabel('',fontsize = 16)
 fig.autofmt_xdate()
 plt.ylabel('Temperature (F)',fontsize = 16)
 plt.tick_params(axis='both',which = 'major',labelsize=16)
 
-plt.savefig('Graphs_and_Images/highs.png')
+plt.savefig('Graphs_and_Images/dv_highs_lows_2014.png')
 plt.show()
 """ 
 for index, column_header in enumerate(header_row):
